@@ -1,0 +1,69 @@
+<html>
+	<header>
+		<title>IoT Edge Module Message Publisher</title>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript">
+			window.onload = function () {
+				var submitButtonElement = document.getElementById("submitButton");
+				submitButtonElement.onclick = function()
+				{
+					var outputElement = document.getElementById("output");
+					var output = outputElement.value;
+
+					var payloadElement = document.getElementById("payload");
+					var payloadValue = payloadElement.value;
+					$.ajax({
+							beforeSend: function(request) {
+								request.setRequestHeader("Access-Control-Allow-Credentials", "http://localhost:7071");
+							},
+							type: 'POST',
+							url: "http://localhost:7071/api/edge-message-publisher?output="+output, 
+							body: payloadValue,
+							success: function(result){
+								console.log(result);
+								displayInLogger(result);
+							}});  
+				}
+			};
+
+			function displayInLogger(result) {
+				var logElement = document.getElementById("logs");
+				logElement.innerHTML = result;
+			}
+
+
+		</script>
+	</header>
+	
+	<body>
+		<form action="/">
+			<table >
+				<tr>
+					<th>Route output</th>
+				</tr>
+				<tr>
+					<th>
+						  <input id="output"  type="text" value="">
+					</th>
+				</tr>
+				<tr>
+					<th>Message payload</th>
+					<th>Request logs(Read Only)</th>
+				</tr>
+				<tr>
+					<th>
+						 <textarea id="payload"  name="text" rows="40" cols="50" wrap="soft"> </textarea>
+					</th>
+					<th>
+						 <textarea id="logs"  name="text" rows="40" cols="50" wrap="soft"> </textarea>
+					</th>
+				</tr>
+				<tr>
+					<th>
+						  <button id="submitButton" type="button">Submit</button>
+					</th>
+				</tr>
+			</table>
+		</form>
+	</body>
+</html>

@@ -3,6 +3,9 @@ var Transport = require('azure-iot-device-mqtt').Mqtt;
 var Client = require('azure-iot-device').ModuleClient;
 var Message = require('azure-iot-device').Message;
 
+const fs = require('fs');
+const path = require('path');
+
 async function connectToModuleClient(output, message)
 {
     var client = await Client.fromEnvironment(Transport);
@@ -28,6 +31,7 @@ async function connectToModuleClient(output, message)
 module.exports = async function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
 
+    
     if (req.query.output) {
 
         await connectToModuleClient(req.query.output, req.body.toString());
@@ -37,9 +41,27 @@ module.exports = async function (context, req) {
         };
     }
     else {
-        context.res = {
-            status: 400,
-            body: "Please pass a correct parameter on the query string!"
-        };
+      
+      if (context.req.method == 'GET')
+      {
+          var htmlContent = fs.readFileSync("./pages/index.html", {
+            encoding : 'UTF-8'
+          });
+          context.res = {
+            headers: {
+              "Content-Type" : "text/html"
+            },
+            status: 200,
+            body: htmlContent
+          };
+      }
+      else
+      {
+          context.res = {
+            status: 200,
+            body: "Please pass the correct parameters."
+          };
+      }
+      
     }
 };
